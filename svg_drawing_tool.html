@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SVG Circle Tool</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f2f2f2;
+    }
+    .wrapper {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .toolbar {
+        width: 70vw;
+        margin-bottom: 10px;
+    }
+    .undo-btn {
+        background: #2f7df6;
+        color: white;
+        border: none;
+        padding: 10px 22px;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+    }
+    svg {
+        width: 70vw;
+        height: 60vh;
+        background: white;
+        border-radius: 10px;
+    }
+    .count {
+        margin-top: 15px;
+        font-size: 22px;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+<div class="wrapper">
+    <div class="toolbar">
+        <button class="undo-btn" onclick="undoCircle()">Undo</button>
+    </div>
+    <svg id="svgCanvas">
+        <rect id="box"
+              x="5%"
+              y="5%"
+              width="90%"
+              height="90%"
+              fill="none"
+              stroke="#cfcfcf"
+              stroke-width="2"
+              stroke-dasharray="8 6"/>
+    </svg>
+    <div class="count">
+        Circles drawn: <span id="counter">0</span>
+    </div>
+</div>
+<script>
+    const svg = document.getElementById("svgCanvas");
+    const box = document.getElementById("box");
+    const counter = document.getElementById("counter");
+
+    let circles = [];
+
+    function getBoxBounds() {
+        return box.getBBox();
+    }
+    svg.addEventListener("click", (e) => {
+        const bounds = getBoxBounds();
+        const x = e.offsetX;
+        const y = e.offsetY;
+        if (
+            x < bounds.x || x > bounds.x + bounds.width ||
+            y < bounds.y || y > bounds.y + bounds.height
+        ) return;
+
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", x);
+        circle.setAttribute("cy", y);
+        circle.setAttribute("r", 10);          
+        circle.setAttribute("fill", "#2f7df6");
+        svg.appendChild(circle);
+        circles.push(circle);
+        counter.textContent = circles.length;
+    });
+    function undoCircle() {
+        if (circles.length > 0) {
+            const last = circles.pop();
+            svg.removeChild(last);
+            counter.textContent = circles.length;
+        }
+    }
+</script>
+
+</body>
+</html>
